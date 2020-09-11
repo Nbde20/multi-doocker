@@ -1,0 +1,28 @@
+language: generic
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t nb1920/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true nb1920/react-test npm test
+
+after_success:
+    - docker build -t nb1920/multi-client ./client
+    - docker build -t nb1920/multi-nginx ./nginx
+    - docker build -t nb1920/multi-server ./server
+    - docker build -t nb1920/multi-worker ./worker
+
+    #Login to the docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    #Take those images and push them to docker hub
+    - docker push nb1920/multi-client
+    - docker push nb1920/multi-nginx
+    - docker push nb1920/multi-server
+    - docker push nb1920/multi-worker
+
+git:
+    depth: 25
+    quiet: true
