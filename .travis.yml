@@ -23,6 +23,3 @@ after_success:
     - docker push nb1920/multi-server
     - docker push nb1920/multi-worker
 
-git:
-    depth: 25
-    quiet: true
